@@ -1,0 +1,36 @@
+<package>
+  <name>h264_image_transport</name>
+  <version>0.0.1</version>
+  <description>
+    H264_image_transport provides a plugin to image_transport for
+    transparently sending an image stream encoded with the Theora codec.
+  </description>
+  <maintainer email="nick.lauder@outlook.com">Nick Lauder</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://www.ros.org/wiki/image_transport_plugins</url>
+  <author>Patrick Mihelich</author>
+  <author>Ethan Dreyfuss</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>image_transport</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+    <image_transport plugin="${prefix}/h264_plugins.xml" />
+  </export>
+</package>
