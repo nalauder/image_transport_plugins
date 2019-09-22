@@ -45,25 +45,11 @@ using namespace std;
 
 namespace h264_image_transport {
 
-H264Publisher::H264Publisher()
-{
- 
-}
-
-H264Publisher::~H264Publisher()
-{
-}
-
 void H264Publisher::advertiseImpl(ros::NodeHandle &nh, const std::string &base_topic, uint32_t queue_size,
                                     const image_transport::SubscriberStatusCallback  &user_connect_cb,
                                     const image_transport::SubscriberStatusCallback  &user_disconnect_cb,
                                     const ros::VoidPtr &tracked_object, bool latch)
 {
-  // queue_size doesn't account for the 3 header packets, so we correct (with a little extra) here.
-  queue_size += 1;
-  // Latching doesn't make a lot of sense with this transport. Could try to save the last keyframe,
-  // but do you then send all following delta frames too?
-  latch = false;
   typedef image_transport::SimplePublisherPlugin<h264_image_transport::Packet> Base;
   Base::advertiseImpl(nh, base_topic, queue_size, user_connect_cb, user_disconnect_cb, tracked_object, latch);
 
@@ -73,15 +59,10 @@ void H264Publisher::advertiseImpl(ros::NodeHandle &nh, const std::string &base_t
   reconfigure_server_->setCallback(f);
 }
 
-
-void H264Publisher::connectCallback(const ros::SingleSubscriberPublisher& pub)
+void H264Publisher::configCb(Config& config, uint32_t level)
 {
-  // Send the header packets to new subscribers
-  for (unsigned int i = 0; i < stream_header_.size(); i++) {
-    pub.publish(stream_header_[i]);
-  }
+  config_ = config;
 }
-
 
 void H264Publisher::publish(const sensor_msgs::Image& message, const PublishFn& publish_fn) const
 {

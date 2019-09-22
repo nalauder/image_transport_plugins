@@ -51,42 +51,30 @@ namespace h264_image_transport {
 class H264Publisher : public image_transport::SimplePublisherPlugin<h264_image_transport::Packet>
 {
 public:
-  H264Publisher();
-
   ~H264Publisher();
   
   // Return the system unique string representing the h264 transport type
-  virtual std::string getTransportName() const { return "h264"; }
+  virtual std::string getTransportName() const 
+  { 
+    return "h264"; 
+  }
 
 protected:
-  // Overridden to tweak arguments and set up reconfigure server
+  // Overridden to set up reconfigure server
   virtual void advertiseImpl(ros::NodeHandle &nh, const std::string &base_topic, uint32_t queue_size,
                              const image_transport::SubscriberStatusCallback  &user_connect_cb,
                              const image_transport::SubscriberStatusCallback  &user_disconnect_cb,
                              const ros::VoidPtr &tracked_object, bool latch);
-  
-  // Callback to send header packets to new clients
-  virtual void connectCallback(const ros::SingleSubscriberPublisher& pub);
 
-  // Main publish function
   virtual void publish(const sensor_msgs::Image& message,
                        const PublishFn& publish_fn) const;
 
-  // Dynamic reconfigure support
   typedef h264_image_transport::H264PublisherConfig Config;
   typedef dynamic_reconfigure::Server<Config> ReconfigureServer;
   boost::shared_ptr<ReconfigureServer> reconfigure_server_;
+  Config config_;
 
   void configCb(Config& config, uint32_t level);
-
-  // Utility functions
-  bool ensureEncodingContext(const sensor_msgs::Image& image, const PublishFn& publish_fn) const;
-  void updateKeyframeFrequency() const;
-
-  // Some data is preserved across calls to publish(), but from the user's perspective publish() is
-  // "logically const"
-  mutable cv_bridge::CvImage img_image_;
-  mutable std::vector<h264_image_transport::Packet> stream_header_;
 };
 
 } //namespace compressed_image_transport

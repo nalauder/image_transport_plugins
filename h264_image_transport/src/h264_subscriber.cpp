@@ -43,22 +43,11 @@ using namespace std;
 
 namespace h264_image_transport {
 
-H264Subscriber::H264Subscriber()
-  : pplevel_(0),
-    received_header_(false),
-    received_keyframe_(false)
-{
-}
-
-H264Subscriber::~H264Subscriber()
-{
-}
 
 void H264Subscriber::subscribeImpl(ros::NodeHandle &nh, const std::string &base_topic, uint32_t queue_size,
                                      const Callback &callback, const ros::VoidPtr &tracked_object,
                                      const image_transport::TransportHints &transport_hints)
 {
-  queue_size += 1;
   typedef image_transport::SimpleSubscriberPlugin<h264_image_transport::Packet> Base;
   Base::subscribeImpl(nh, base_topic, queue_size, callback, tracked_object, transport_hints);
 
@@ -66,6 +55,11 @@ void H264Subscriber::subscribeImpl(ros::NodeHandle &nh, const std::string &base_
   reconfigure_server_ = boost::make_shared<ReconfigureServer>(this->nh());
   ReconfigureServer::CallbackType f = boost::bind(&H264Subscriber::configCb, this, _1, _2);
   reconfigure_server_->setCallback(f);
+}
+
+void H264Subscriber::configCb(Config& config, uint32_t level)
+{
+  config_ = config;
 }
 
 void H264Subscriber::internalCallback(const h264_image_transport::PacketConstPtr& message, const Callback& callback)

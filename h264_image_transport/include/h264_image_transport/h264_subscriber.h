@@ -49,35 +49,29 @@ namespace h264_image_transport {
 class H264Subscriber : public image_transport::SimpleSubscriberPlugin<h264_image_transport::Packet>
 {
 public:
-  H264Subscriber();
   virtual ~H264Subscriber();
 
-  virtual std::string getTransportName() const { return "h264"; }
+  virtual std::string getTransportName() const 
+  { 
+    return "h264"; 
+  }
 
 protected:
-  // Overridden to bump queue_size, otherwise we might lose headers
-  // Overridden to tweak arguments and set up reconfigure server
+  // Overridden to set up reconfigure server
   virtual void subscribeImpl(ros::NodeHandle &nh, const std::string &base_topic, uint32_t queue_size,
-                             const Callback &callback, const ros::VoidPtr &tracked_object,
-                             const image_transport::TransportHints &transport_hints);
+          const Callback &callback, const ros::VoidPtr &tracked_object,
+          const image_transport::TransportHints &transport_hints);
   
-  // The function that does the actual decompression and calls a user supplied callback with the resulting image
-  virtual void internalCallback(const h264_image_transport::PacketConstPtr &msg, const Callback& user_cb);
 
-  // Dynamic reconfigure support
+  virtual void internalCallback(const h264_image_transport::PacketConstPtr &msg, 
+                                const Callback& user_cb);
+
   typedef h264_image_transport::H264SubscriberConfig Config;
   typedef dynamic_reconfigure::Server<Config> ReconfigureServer;
   boost::shared_ptr<ReconfigureServer> reconfigure_server_;
-  int pplevel_; // Post-processing level
+  Config config_;
 
   void configCb(Config& config, uint32_t level);
-
-  // Utility functions
-  int updatePostProcessingLevel(int level);
-
-  bool received_header_;
-  bool received_keyframe_;
-  sensor_msgs::ImagePtr latest_image_;
 };
 
 } //namespace h264_image_transport
